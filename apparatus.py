@@ -118,13 +118,10 @@ score = 0.7 * abs(overshoot) + 0.3 * (wiggles / 50.0)
 
 if score < 0.25:
     verdict = "calm"
-    verdict_jp = "落ち着いた"
 elif score < 0.60:
     verdict = "restless"
-    verdict_jp = "ちょっと暴れた"
 else:
     verdict = "feral"
-    verdict_jp = "だいぶ暴れた"
 
 # ================== 2) FFT plot (output spectrum) ==================
 # Windowing to make spectrum nicer
