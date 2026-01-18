@@ -1,22 +1,21 @@
-# Daily Random Circuit
+# Daily Useless Physics
 
 Every day, GitHub Actions generates a **random dynamical system**
 and excites it with a **random input signal**.
 
-## Today's Result (2026-01-17)
+## Today's Result (2026-01-18)
 
-- **System**: RC
-- **Parameters**: R=3.23, C=2.38, τ=7.67
-- **Input**: impulse (area≈1.38)
+- **System**: RLC
+- **Parameters**: R=10.00, L=10.00, C=1.00, ωn=0.32, ζ=1.58
+- **Input**: noise (σ≈0.71)
 
 ### Useless judgement
 - **verdict**: **feral**（だいぶ暴れた）
-- overshoot-ish: 1.264
-- wiggles: 1
-- FFT peak: 0.100 (arb.)
+- overshoot-ish: 0.086
+- wiggles: 150
+- FFT peak (output): 0.100 (arb.)
 
-> We observed a rare event: uncontrolled confidence.
+> A resonance-like thing happened. Please do not ask why.
 
-![result](./result.svg?raw=1)
-
+![result](result.svg)
 
