@@ -5,17 +5,17 @@ and excites it with a **random input signal**.
 
 ## Today's Result (2026-01-18)
 
-- **System**: RLC
-- **Parameters**: R=10.00, L=10.00, C=1.00, ωn=0.32, ζ=1.58
-- **Input**: noise (σ≈0.71)
+- **System**: RC
+- **Parameters**: R=5.00, C=0.10, τ=0.50
+- **Input**: sine (A=1.35, f=1.24 Hz)
 
 ### Useless judgement
-- **verdict**: **feral**（だいぶ暴れた）
-- overshoot-ish: 0.086
-- wiggles: 150
-- FFT peak (output): 0.100 (arb.)
+- **verdict**: **feral**
+- overshoot-ish: 1.001
+- wiggles: 24
+- FFT peak (output): 1.200 (arb.)
 
-> A resonance-like thing happened. Please do not ask why.
+> We observed a rare event: uncontrolled confidence.
 
 ![result](result.svg)
 
