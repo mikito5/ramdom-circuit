@@ -14,6 +14,12 @@ t = np.linspace(0, T, N)
 dt = t[1] - t[0]
 fs = 1.0 / dt  # [1/s] (tの単位が"秒"という建て付け)
 
+# ================== Discrete component values (1) ==================
+# “イメージしやすい値”だけを候補にする
+R_VALUES = np.array([0.5, 1.0, 2.0, 5.0, 10.0])
+L_VALUES = np.array([0.5, 1.0, 2.0, 5.0, 10.0])
+C_VALUES = np.array([0.1, 0.2, 0.5, 1.0, 2.0, 5.0])
+
 # ================== Input signals ==================
 def make_input(kind, t):
     A = rng.uniform(0.8, 1.5)
@@ -67,24 +73,25 @@ def first_order_response(x, tau, dt):
 
 # ---------- Simulate ----------
 if system == "RC":
-    R = rng.uniform(0.5, 5.0)
-    C = rng.uniform(0.2, 5.0)
+    R = float(rng.choice(R_VALUES))
+    C = float(rng.choice(C_VALUES))
     tau = R * C
     y = first_order_response(x, tau, dt)
     params = f"R={R:.2f}, C={C:.2f}, τ={tau:.2f}"
 
 elif system == "RL":
-    R = rng.uniform(0.5, 5.0)
-    L = rng.uniform(0.5, 5.0)
+    R = float(rng.choice(R_VALUES))
+    L = float(rng.choice(L_VALUES))
     tau = L / R
     y = first_order_response(x, tau, dt)
     params = f"R={R:.2f}, L={L:.2f}, τ={tau:.2f}"
 
 else:
     # Standard 2nd order form: y'' + 2ζωn y' + ωn^2 y = ωn^2 x
-    R = rng.uniform(0.3, 2.0)
-    L = rng.uniform(0.5, 3.0)
-    C = rng.uniform(0.2, 3.0)
+    R = float(rng.choice(R_VALUES))
+    L = float(rng.choice(L_VALUES))
+    C = float(rng.choice(C_VALUES))
+
     wn = 1.0 / np.sqrt(L * C)
     zeta = (R / 2.0) * np.sqrt(C / L)
 
@@ -123,21 +130,40 @@ elif score < 0.60:
 else:
     verdict = "feral"
 
-# ================== 2) FFT plot (output spectrum) ==================
-# Windowing to make spectrum nicer
-window = np.hanning(len(y_center))
-Y = np.fft.rfft(y_center * window)
-freq = np.fft.rfftfreq(len(y_center), d=dt)
-mag = np.abs(Y)
+verdict_jp_map = {
+    "calm": "おだやか",
+    "restless": "そわそわ",
+    "feral": "だいぶ暴れた"
+}
+verdict_jp = verdict_jp_map[verdict]
 
-# Avoid the DC bin dominating the plot
-mag[0] = 0.0
+# ================== 2) FFT plot (input + output) ==================
+# Center signals (remove DC), window for nicer spectrum
+x_center = x - np.mean(x)
+y_center = y - np.mean(y)
+
+window = np.hanning(len(y_center))
+X = np.fft.rfft(x_center * window)
+Y = np.fft.rfft(y_center * window)
+
+freq = np.fft.rfftfreq(len(y_center), d=dt)
+
+magX = np.abs(X)
+magY = np.abs(Y)
+
+# Avoid DC dominating
+magX[0] = 0.0
+magY[0] = 0.0
+
 mask = freq > 0
 freqp = freq[mask]
-magp = mag[mask]
-peak_k = int(np.argmax(mag))
-peak_f = float(freq[peak_k])
-peak_mag = float(mag[peak_k])
+magXp = magX[mask]
+magYp = magY[mask]
+
+# Peak of output spectrum (on positive freqs)
+peak_k = int(np.argmax(magYp))
+peak_f = float(freqp[peak_k])
+peak_mag = float(magYp[peak_k])
 
 # ================== 3) English one-liner ==================
 one_liners = {
@@ -175,16 +201,22 @@ ax1.set_title(
 ax1.legend()
 ax1.grid(True, alpha=0.25)
 
-# Bottom: spectrum
+# Bottom: spectrum (log-log)  ※xlimは “正の範囲” を指定するのが安全
 ax2 = plt.subplot(2, 1, 2)
-ax2.plot(freqp, magp, label="output FFT")
+ax2.plot(freqp, magXp, label="input FFT", alpha=0.6)
+ax2.plot(freqp, magYp, label="output FFT")
 ax2.set_xscale("log")
 ax2.set_yscale("log")
-ax2.set_xlim(0, min(np.max(freq), 10.0))  # 見やすさ優先で低周波側だけ
+
+# 見やすさ優先で低周波側だけ（ただし log なので左端は >0 ）
+xmax = min(np.max(freqp), 10.0)
+ax2.set_xlim(freqp[0], xmax)
+
 ax2.set_xlabel("frequency [arb.]")
-ax2.set_ylabel("|FFT(output)|")
-ax2.set_title(f"FFT peak ≈ {peak_f:.3f} (arb.), magnitude ≈ {peak_mag:.3e}")
+ax2.set_ylabel("|FFT(.)|")
+ax2.set_title(f"Output FFT peak ≈ {peak_f:.3f} (arb.), magnitude ≈ {peak_mag:.3e}")
 ax2.grid(True, alpha=0.25)
+ax2.legend()
 
 plt.tight_layout()
 plt.savefig("result.svg")
@@ -206,7 +238,7 @@ and excites it with a **random input signal**.
 - **verdict**: **{verdict}**（{verdict_jp}）
 - overshoot-ish: {overshoot:.3f}
 - wiggles: {wiggles}
-- FFT peak: {peak_f:.3f} (arb.)
+- FFT peak (output): {peak_f:.3f} (arb.)
 
 > {line}
 
