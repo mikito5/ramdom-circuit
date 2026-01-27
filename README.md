@@ -3,20 +3,20 @@
 Every day, GitHub Actions generates a **random dynamical system**
 and excites it with a **random input signal**.
 
-## Today's Result (2026-01-26)
+## Today's Result (2026-01-27)
 
-- **System**: RLC
+- **System**: RC
 - **Filter kind (random by system)**: high
-- **Parameters**: R=0.595, L=2.00, C=5.00, ωn=0.32, ζ=0.470, Q=1.06
-- **Input**: impulse (area≈1.31)
+- **Parameters**: R=5.00, C=0.50, τ=2.50
+- **Input**: square (A=0.97, f=0.41 Hz)
 
 ### Useless judgement
 - **verdict**: **feral**
-- overshoot-ish: 1.000
-- wiggles: 2
-- FFT peak (output): 0.100 (arb.)
+- overshoot-ish: 1.182
+- wiggles: 9
+- FFT peak (output): 0.400 (arb.)
 - rough shape guess from |Y|/|X|: band/flat-ish
 
-> We observed a rare event: uncontrolled confidence.
+> A resonance-like thing happened. Please do not ask why.
 
 ![result](result.svg)
